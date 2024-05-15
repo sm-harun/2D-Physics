@@ -1,54 +1,41 @@
-let canvas = document.getElementById("main-canvas");
+"use strict";
+let canvas = document.querySelector("#main-canvas");
 let ctx = canvas.getContext("2d");
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-x = canvas.width / 2;
-y = canvas.height / 2;
-
-vx = 8;
-vy = 9;
-
-radius = 40;
-radius_growth = 1;
-
-// We indicate direction using 1 and -1.
-directionY = 1;
-directionX = 1;
-
-aY = 0.4;
-
-function animate() {
-	
-	requestAnimationFrame(animate);
-
-	if (radius < 10 || radius > 70) {
-		radius_growth = -radius_growth;
-	}
-
-	radius += radius_growth;
-
-	ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-	ctx.beginPath();
-	ctx.strokeStyle = "red";
-	ctx.lineWidth = 2;
-
-	ctx.arc(x, y, radius, 0, Math.PI*2, false);
-	
-	ctx.stroke();
-	ctx.closePath();
-	
-	if (y > (canvas.height - radius) || y < radius) {
-		directionY = -directionY;
-	}
-	if (x > (canvas.width - radius) || x < radius) {
-		directionX = -directionX;
-	}
-	
-	x += vx * directionX;
-	y += vy * directionY;
+if (!ctx)
+    throw new Error("Couldn't get context");
+resize();
+window.addEventListener("resize", resize);
+let x = canvas.width / 2;
+let y = canvas.height / 2;
+let vx = 8;
+let vy = 6;
+let ay = 0.3;
+let radius = 100;
+let radiusChange = 2;
+function resize() {
+    canvas.width = window.innerWidth || 500;
+    canvas.height = window.innerHeight || 500;
 }
-
-animate();
+function loop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawCircle(x, y, radius);
+    if (x <= 0 || x >= canvas.width)
+        vx = -vx;
+    if (y <= 0 || y >= canvas.height)
+        vy = -vy;
+    x += vx;
+    y += vy;
+    if (radius <= 50 || radius >= 200)
+        radiusChange = -radiusChange;
+    radius += radiusChange;
+    requestAnimationFrame(loop);
+}
+loop();
+function drawCircle(xCord, yCord, r) {
+    ctx.beginPath();
+    ctx.strokeStyle = "white";
+    ctx.lineWidth = 2;
+    ctx.arc(xCord, yCord, r, 0, Math.PI * 2, false);
+    ctx.stroke();
+    ctx.closePath();
+}
